@@ -29,7 +29,7 @@ class Listing(models.Model):
     total_price = models.DecimalField(
         max_digits=10, decimal_places=2, null=False, help_text="Total cost of the trip")
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
 
     def __str__(self):
         return f"{self.start_location} to {self.destination}"
@@ -70,7 +70,7 @@ class Booking(models.Model):
         help_text="Status of the booking"
     )
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
 
     def __str__(self):
         return f"Booking {self.booking_id} for {self.listing}"
@@ -102,7 +102,7 @@ class Review(models.Model):
     )
     comment = models.TextField(null=False, help_text="Review comment")
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
 
     def __str__(self):
         return f"Review {self.review_id} - Rating {self.rating}"

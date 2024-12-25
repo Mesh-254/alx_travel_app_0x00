@@ -24,8 +24,10 @@ def stream_users():
         )
 
         with connection.cursor() as cursor:
+            print("Connection established")
             try:
-                cursor.execute("SELECT * FROM listing")
+                cursor.execute("SELECT * FROM listings_listing")
+                print("Fetching data...")
 
                 for x in cursor:
                     print(x)
