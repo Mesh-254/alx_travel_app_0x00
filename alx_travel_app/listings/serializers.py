@@ -2,14 +2,22 @@ from rest_framework import serializers
 from .models import Listing, Booking, Review
 
 
-class ListingSerializer(serializers.ModelSerializer):
+class ListingSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for the Listing model with custom create and update methods.
     """
+
+    bookings = serializers.HyperlinkedRelatedField(
+        many=True, view_name='booking-detail', format='html', read_only=True)
+    
+
+    reviews = serializers.HyperlinkedRelatedField(
+        many=True, view_name='review-detail', format='html', read_only=True)
+
     class Meta:
         model = Listing
         fields = ['listing_id', 'start_location', 'destination', 'total_price',
-                  'created_at', 'updated_at']  # Serializes specific fields in the Listing model
+                  'created_at', 'updated_at', 'bookings', 'reviews']  # Serializes specific fields in the Listing model
 
     def create(self, validated_data):
         """
@@ -44,13 +52,13 @@ class ListingSerializer(serializers.ModelSerializer):
         return instance
 
 
-class BookingSerializer(serializers.ModelSerializer):
+class BookingSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for the Booking model with custom create and update methods.
     """
 
-    listing = serializers.PrimaryKeyRelatedField(queryset=Listing.objects.all())
-
+    listing = serializers.HyperlinkedRelatedField(
+        view_name='listing-detail', queryset=Listing.objects.all())
 
     class Meta:
         model = Booking
@@ -89,19 +97,22 @@ class BookingSerializer(serializers.ModelSerializer):
         return instance
 
 
-class ReviewSerializer(serializers.ModelSerializer):
+class ReviewSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for the Review model.
     Handles creation, updates, and validations.
     """
 
     # Nested representation of the listing, you can modify fields or use a ListingSerializer
-    listing = serializers.PrimaryKeyRelatedField(queryset=Listing.objects.all())
-    
+    listing = serializers.HyperlinkedRelatedField(
+        view_name='listing-detail', queryset=Listing.objects.all())
+
     class Meta:
         model = Review
-        fields = ['review_id', 'listing', 'rating', 'comment', 'created_at']  # Include necessary fields
-        read_only_fields = ['review_id', 'created_at']  # Fields that are automatically generated and should not be updated
+        fields = ['review_id', 'listing', 'rating', 'comment',
+                  'created_at']  # Include necessary fields
+        # Fields that are automatically generated and should not be updated
+        read_only_fields = ['review_id', 'created_at']
 
     def create(self, validated_data):
         """
